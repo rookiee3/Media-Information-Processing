@@ -1,0 +1,140 @@
+#include <Arduino.h>
+#include <stack>
+
+std::stack<int> numStack = std::stack<int>();
+std::stack<char> opStacks = std::stack<char>();
+
+int calculate(char op, int num1, int num2) {
+  switch (op) {
+    case '+':
+      return num1 + num2;
+    case '-':
+      return num1 - num2;
+    case '*':
+      return num1 * num2;
+    case '/':
+      if(num2==0){
+          Serial.println("error");
+          return -1;
+        }else{
+          return num1 / num2; 
+          }
+      
+    default:
+      return 0;  // 处理未知运算符的情况
+  }
+}
+
+bool isOperator(char ch) {
+  return ch == '+' || ch == '-' || ch == '*' || ch == '/';
+}
+
+bool hasHigherPrecedence(char op1, char op2) {
+  if (op2 == '(' || op2 == ')')
+    return false;
+  else if ((op1 == '*' || op1 == '/') && (op2 == '+' || op2 == '-'))
+    return false;
+  else
+    return true;
+}
+
+int evaluateExpression(const char* expression) {
+  int len = strlen(expression);
+
+  for (int i = 0; i < len; i++) {
+    char ch = expression[i];
+
+    if (ch >= '0' && ch <= '9') {
+      int num = 0;
+      while (ch >= '0' && ch <= '9') {
+        num = num * 10 + (ch - '0');
+        i++;
+        ch = expression[i];
+      }
+      i--;
+
+      numStack.push(num);
+    } else if (isOperator(ch)) {
+      while (!opStacks.empty() && hasHigherPrecedence(ch, opStacks.top())) {
+        char op = opStacks.top();
+        opStacks.pop();
+        int num2 = numStack.top();
+        numStack.pop();
+        int num1 = numStack.top();
+        numStack.pop();
+        int result = calculate(op, num1, num2);
+        numStack.push(result);
+      }
+
+      opStacks.push(ch);
+    } else if (ch == '(') {
+      int flag=0;
+      for (int i = 0; i < len; i++) {
+        char ch = expression[i];
+        if(expression[i]==')'){
+            flag++;
+          }
+    }
+      if(!flag){
+          Serial.println("Invalid expression!"); //只有左括号
+          return -1;
+        }
+      opStacks.push(ch);
+    } else if (ch == ')') {
+      while (!opStacks.empty() && opStacks.top() != '(') {
+        char op = opStacks.top();
+        opStacks.pop();
+        int num2 = numStack.top();
+        numStack.pop();
+        int num1 = numStack.top();
+        numStack.pop();
+        int result = calculate(op, num1, num2);
+        numStack.push(result);
+      }
+
+      if (!opStacks.empty() && opStacks.top() == '(')
+        opStacks.pop();
+      else {
+        // 括号不匹配
+        Serial.println("Invalid expression");
+        return 0;
+      }
+    } else {
+      // 非法字符
+      Serial.println("Invalid expression");
+      return 0;
+    }
+  }
+
+  while (!opStacks.empty()) {
+    char op = opStacks.top();
+    opStacks.pop();
+    int num2 = numStack.top();
+    numStack.pop();
+    int num1 = numStack.top();
+    numStack.pop();
+    int result = calculate(op, num1, num2);
+    numStack.push(result);
+  }
+
+  if (numStack.empty()) {
+    // 表达式无效
+    Serial.println("Invalid expression");
+    return 0;
+  } else {
+    return numStack.top();
+  }
+}
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    String input = Serial.readStringUntil('\n');
+    const char* expression = input.c_str();
+    int result = evaluateExpression(expression);
+    Serial.println(result);
+  }
+}

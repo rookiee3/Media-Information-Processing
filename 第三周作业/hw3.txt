@@ -1,0 +1,58 @@
+相机实践作业：
+
+通过LCD完成照相机的预览，并根据串口输入完成以下功能。
+1）通过串口输入完成白平衡设置。
+串口输入AWB时，需要输出当前白平衡的内容。
+串口输入AWB_AUTO时，将白平衡设置为Automatic
+串口输入AWB_IN时，将白平衡设置为Incandescent
+串口输入AWB_FL时，将白平衡设置为Fluorescent
+串口输入AWB_DA时，将白平衡设置为Daylight
+串口输入AWB_FLASH时，将白平衡设置为Flash
+串口输入AWB_CL时，将白平衡设置为Cloudy
+串口输入AWB_SHADE时，将白平衡设置为Shade
+
+白平衡设置的对应常量定义如下：
+常量 解释
+CAM_WHITE_BALANCE_AUTO: Automatic
+CAM_WHITE_BALANCE_INCANDESCENT: Incandescent
+CAM_WHITE_BALANCE_FLUORESCENT: Fluorescent
+CAM_WHITE_BALANCE_DAYLIGHT: Daylight
+CAM_WHITE_BALANCE_FLASH: Flash
+CAM_WHITE_BALANCE_CLOUDY: Cloudy
+CAM_WHITE_BALANCE_SHADE: Shade
+
+
+2）通过串口输入完成Color Effect设置。
+串口输入CFX时，需要输出当前Color Effect的内容。
+串口输入CFX_NONE时，将Color Effect设置为No effect
+串口输入CFX_BW时，将Color Effect设置为Black/white
+串口输入CFX_SEPIA时，将Color Effect设置为Sepia
+串口输入CFX_NEGATIVE时，将Color Effect设置为Pos/Neg inversion
+串口输入CFX_SKETCH时，将Color Effect设置为Sketch
+串口输入CFX_VIVID时，将Color Effect设置为Vivid
+串口输入CFX_SOLARIZATION时，将Color Effect设置为Solarization
+串口输入CFX_PASTEL时，将Color Effect设置为Pastel
+
+Color Effect设置的对应常量定义如下：
+常量 解释
+CAM_COLOR_FX_NONE: No effect
+CAM_COLOR_FX_BW: Black/white
+CAM_COLOR_FX_SEPIA: Sepia
+CAM_COLOR_FX_NEGATIVE: Pos/Neg inversion
+CAM_COLOR_FX_SKETCH: Sketch
+CAM_COLOR_FX_VIVID: Vivid
+CAM_COLOR_FX_SOLARIZATION: Solarization
+CAM_COLOR_FX_PASTEL: Pastel
+
+3）通过串口输入完成图片的保存。
+串口输入PN:XXXX，完成保存图片到SD卡，图片名称为XXXX.JPG。
+例如：串口输入PN:mypic，则取得当前图片并保存为mypic.JPG。
+
+
+4）通过串口输入完成图片的保存。
+串口输入SN:XXXX，完成保存视频流到SD卡，名称为XXXX,
+视频长度自定义
+例如：串口输入SN:mystr，则取得当前视频流并保存为mystr。
+
+5）通过串口输入完成视频流的播放。
+串口输入PSN:XXXX，播放SD视频，当前无文件提示错误

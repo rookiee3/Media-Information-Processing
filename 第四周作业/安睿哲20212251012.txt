@@ -1,0 +1,104 @@
+unsigned char LD_readReg(unsigned char address) 
+{
+  unsigned char re;
+  delay(10);
+  cSLow();
+  SPI.transfer(0x05);
+  SPI.transfer(address);
+  result = SPI.transfer(0x00); 
+  cSHigh(); 
+  return (re);
+}
+
+void LD_reset()
+  digitalWrite(RSTB, HIGH);
+  delay(1);
+  digitalWrite(RSTB, LOW);
+  delay(1);
+  digitalWrite(RSTB, HIGH);
+  delay(1);
+  cSLow();
+  delay(1);
+  cSHigh();
+  delay(1);
+}
+
+
+
+void LD_writeReg(unsigned char address, unsigned char value) 
+{
+  cSLow();
+  delay(10);
+  SPI.transfer(0x04);
+  SPI.transfer(address);  
+  SPI.transfer(value);  
+  cSHigh();
+}
+
+void LD_ASRget()/**中断执行程序**/
+{
+  
+  uint8_t Asr_Count = 0;
+  LD_writeReg(0x29, 0) ;
+  LD_writeReg(0x02, 0) ;
+  if ((LD_readReg(0x2b) & 0x10) && LD_readReg(0xb2) == 0x21 && LD_readReg(0xbf) == 0x35)
+  {
+
+    Asr_Count = LD_readReg(0xba);
+    if (Asr_Count > 0 && Asr_Count < 4)
+    {
+      readnum = LD_readReg(0xc5);
+      readflag = 1;
+    }
+    else {
+      Serial.println("运算结果是无法识别");
+    }
+    LD_writeReg(0x2b, 0);
+    LD_writeReg(0x1C, 0);
+  }
+  else {
+    Serial.println("运算结果是无法识别");
+  }
+    LD_readReg(0x06);
+    delay(10);
+    LD_readReg(0x06);
+    LD_writeReg(0x89, 0x03);
+    delay(5);
+    LD_writeReg(0xcf, 0x43);
+    delay(5);
+    LD_writeReg(0xcb, 0x02);
+    LD_writeReg(0x11, PLL_11);
+    LD_writeReg(0x1e, 0x00);
+    LD_writeReg(0x19, PLL_ASR_19);
+    LD_writeReg(0x1b, PLL_ASR_1B);
+    LD_writeReg(0x1d, PLL_ASR_1D);
+    delay(10);
+    LD_writeReg(0xcd, 0x04);
+    LD_writeReg(0x17, 0x4c);
+    delay(5);
+    LD_writeReg(0xcf, 0x4f);
+    LD_writeReg(0xbd, 0x00);
+    LD_writeReg(0x17, 0x48);
+    delay(10);
+    LD_writeReg(0x3c, 0x80);
+    LD_writeReg(0x3e, 0x07);
+    LD_writeReg(0x38, 0xff);
+    LD_writeReg(0x3a, 0x07);
+    LD_writeReg(0x40, 0);
+    LD_writeReg(0x42, 8);
+    LD_writeReg(0x44, 0);
+    LD_writeReg(0x46, 8);
+    delay(1);
+    LD_writeReg(0x1c, 0x09);
+    LD_writeReg(0xbd, 0x20);
+    LD_writeReg(0x08, 0x01);
+    delay( 1);
+    LD_writeReg(0x08, 0x00);
+    delay( 1);
+    LD_writeReg(0xb2, 0xff);
+    LD_writeReg(0x37, 0x06);
+    delay( 5 );
+    LD_writeReg(0x1c, 0x0b);
+    LD_writeReg(0x29, 0x10);
+    LD_writeReg(0xbd, 0x00);
+}
